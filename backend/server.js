@@ -4,6 +4,11 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import otpRoutes from "./routes/otpRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js"; 
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -12,12 +17,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/otp", otpRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes); // ✅ added
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
-// Routes
-app.use("/api/auth", authRoutes);
-
+// Root route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
