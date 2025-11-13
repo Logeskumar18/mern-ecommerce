@@ -1,16 +1,15 @@
 import express from "express";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 import {
-  getAllUsers,
-  toggleBlockUser,
-  getDashboardStats,
+  getDashboardData,
+  getAllOrders,
+  updateOrderStatus,
 } from "../controllers/adminController.js";
-import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Only Admins can access these routes
-router.get("/users", protect, authorizeRoles("admin"), getAllUsers);
-router.put("/users/:id/block", protect, authorizeRoles("admin"), toggleBlockUser);
-router.get("/dashboard", protect, authorizeRoles("admin"), getDashboardStats);
+router.get("/dashboard", protect, adminOnly, getDashboardData);
+router.get("/orders", protect, adminOnly, getAllOrders);
+router.put("/orders/:id", protect, adminOnly, updateOrderStatus);
 
 export default router;
