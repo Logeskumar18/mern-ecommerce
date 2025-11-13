@@ -1,48 +1,56 @@
-import { createContext, useEffect, useState } from "react";
-import { getCart as apiGetCart } from "../api/cartAPI";
+import React, { createContext, useState, useEffect } from "react";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-	const [items, setItems] = useState(() => {
-		try {
-			const raw = localStorage.getItem("cart");
-			return raw ? JSON.parse(raw) : [];
-		} catch (e) {
-			return [];
-		}
-	});
+  const [cartItems, setCartItems] = useState([]);
 
-	useEffect(() => {
-		localStorage.setItem("cart", JSON.stringify(items));
-	}, [items]);
+  // Load from localStorage
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) setCartItems(JSON.parse(storedCart));
+  }, []);
 
-	const setRemoteCart = async () => {
-		try {
-			const data = await apiGetCart();
-			if (data?.items) setItems(data.items);
-		} catch (e) {
-			// ignore if not logged in
-		}
-	};
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
 
-	const addItem = (product, qty = 1) => {
-		setItems((prev) => {
-			const exist = prev.find((p) => p._id === product._id);
-			if (exist) {
-				return prev.map((p) => (p._id === product._id ? { ...p, qty: p.qty + qty } : p));
-			}
-			return [...prev, { ...product, qty }];
-		});
-	};
+  // Add product
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item._id === product._id);
+      if (existing) {
+        return prev.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prev, { ...product, quantity: 1 }];
+      }
+    });
+  };
 
-	const removeItem = (productId) => setItems((prev) => prev.filter((p) => p._id !== productId));
+  // Remove product
+  const removeFromCart = (productId) => {
+    setCartItems((prev) => prev.filter((item) => item._id !== productId));
+  };
 
-	const clear = () => setItems([]);
+  // Clear cart
+  const clearCart = () => setCartItems([]);
 
-	return (
-		<CartContext.Provider value={{ items, setItems, addItem, removeItem, clear, setRemoteCart }}>
-			{children}
-		</CartContext.Provider>
-	);
+  // Get total
+  const totalAmount = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
+  return (
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, clearCart, totalAmount }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 };

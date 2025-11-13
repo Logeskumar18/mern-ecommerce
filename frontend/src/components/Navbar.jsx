@@ -4,36 +4,69 @@ import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
 
 const Navbar = () => {
-	const { user, logout } = useContext(AuthContext);
-	const { items } = useContext(CartContext);
-	const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+  const { cartItems } = useContext(CartContext);
+  const navigate = useNavigate();
 
-	const handleLogout = () => {
-		logout();
-		navigate("/login");
-	};
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
-	return (
-		<nav className="px-4 py-3 bg-gray-800 text-white flex items-center justify-between">
-			<Link to="/" className="text-xl font-bold">
-				MERN Shop
-			</Link>
-			<div className="flex items-center gap-4">
-				<Link to="/products">Products</Link>
-				<Link to="/cart">Cart ({items.length})</Link>
-				{user ? (
-					<>
-						<span>Hello, {user.name || user.email}</span>
-						<button onClick={handleLogout} className="ml-2 underline">
-							Logout
-						</button>
-					</>
-				) : (
-					<Link to="/login">Login</Link>
-				)}
-			</div>
-			</nav>
-		);
-	};
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+      <div className="container">
+        <Link to="/" className="navbar-brand fw-bold">
+          MERN Shop
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto align-items-center">
+            <li className="nav-item">
+              <Link to="/products" className="nav-link">
+                Products
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/cart" className="nav-link">
+                Cart ({cartItems?.length || 0})
+              </Link>
+            </li>
+
+            {user ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link">Hello, {user.name || user.email}</span>
+                </li>
+                <li className="nav-item">
+                  <button onClick={handleLogout} className="btn btn-link nav-link p-0">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item">
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 export default Navbar;

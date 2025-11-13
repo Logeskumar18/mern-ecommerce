@@ -1,43 +1,64 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import { ProductProvider } from "./context/ProductContext";
-import { CartProvider } from "./context/CartContext";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
+// // 🔹 User Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import OTPVerify from "./pages/OTPVerify";
+import Products from "./pages/Products";
+import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
-import Navbar from "./components/Navbar";
-import ProductList from "./pages/ProductList";
-import ProductDetail from "./pages/ProductDetail";
-import Signup from "./pages/Signup";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
-import AdminDashboard from "./pages/AdminDashboard";
+import OrderDetails from "./pages/OrderDetails";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
+
+// // 🔹 Admin Pages
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import ManageProducts from "./pages/Admin/ManageProducts";
+import ManageCategories from "./pages/Admin/ManageCategories";
+import Analytics from "./pages/Admin/Analytics";
 
 function App() {
   return (
-    <AuthProvider>
-      <ProductProvider>
-        <CartProvider>
-          <Router>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<ProductList />} />
-              <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-              <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Router>
-        </CartProvider>
-      </ProductProvider>
-    </AuthProvider>
+    <Router>
+      {/* Common Header */}
+      <Navbar />
+
+      {/* Page Routes */}
+      <Routes>
+        {/* 🧍‍♂️ Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/verify-otp" element={<OTPVerify />} />
+
+        {/* 🏠 User Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
+        <Route path="/profile" element={<Profile />} />
+
+        {/* 🧑‍💼 Admin Routes */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<ManageProducts />} />
+        <Route path="/admin/categories" element={<ManageCategories />} />
+        <Route path="/admin/analytics" element={<Analytics />} />
+
+        {/* ❌ 404 Fallback */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+
+      {/* Common Footer */}
+      <Footer />
+    </Router>
   );
 }
 
