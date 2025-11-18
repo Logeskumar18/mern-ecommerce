@@ -179,11 +179,16 @@ const ProductDetails = () => {
   const handleAddToCart = () => {
     const productWithVariations = {
       ...product,
-      selectedVariations,
       finalPrice: calculateFinalPrice()
     };
     
-    addToCart(productWithVariations, quantity);
+    // Convert selectedVariations object to array format expected by backend
+    const variationsArray = Object.entries(selectedVariations).map(([type, value]) => ({
+      type,
+      value
+    }));
+    
+    addToCart(productWithVariations, quantity, variationsArray);
     setToastMessage(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart!`);
     setToastType("success");
     setQuantity(1);
