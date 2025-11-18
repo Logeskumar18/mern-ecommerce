@@ -4,15 +4,25 @@ import { AuthContext } from "../context/AuthContext";
 
 const OrderDetails = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchOrder = async () => {
+      if (!token) {
+        setError("Please login to view order details");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/orders/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         const data = await res.json();
 
         if (res.ok) setOrder(data);
@@ -25,7 +35,7 @@ const OrderDetails = () => {
     };
 
     fetchOrder();
-  }, [id]);
+  }, [id, token]);
 
   if (loading) {
     return (
@@ -75,7 +85,7 @@ const OrderDetails = () => {
                 <div key={item._id} className="d-flex justify-content-between align-items-center border rounded p-3 bg-light">
                   <div className="d-flex align-items-center gap-3">
                     <img
-                      src={item.image || "/placeholder.jpg"}
+                      src={item.images?.[0] || "https://via.placeholder.com/80x80/f8f9fa/6c757d?text=No+Image"}
                       alt={item.name}
                       className="rounded" 
                       style={{ width: "64px", height: "64px", objectFit: "cover" }}

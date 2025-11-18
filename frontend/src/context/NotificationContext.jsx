@@ -19,13 +19,14 @@ export const NotificationProvider = ({ children }) => {
       {/* Simple Toast UI */}
       {message && (
         <div
-          className={`fixed bottom-5 right-5 px-4 py-2 rounded-lg text-white shadow-lg transition-all ${
+          className={`position-fixed bottom-0 end-0 m-3 px-3 py-2 rounded text-white shadow ${
             type === "success"
-              ? "bg-green-500"
+              ? "bg-success"
               : type === "error"
-              ? "bg-red-500"
-              : "bg-blue-500"
+              ? "bg-danger"
+              : "bg-primary"
           }`}
+          style={{ zIndex: 1050 }}
         >
           {message}
         </div>

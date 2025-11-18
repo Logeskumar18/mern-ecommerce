@@ -3,11 +3,11 @@ import { CartContext } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, getTotal } =
+  const { cartItems, removeFromCart, updateQuantity, totalAmount } =
     useContext(CartContext);
   const navigate = useNavigate();
 
-  if (cartItems.length === 0) {
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
     return (
       <div className="d-flex flex-column justify-content-center align-items-center text-center" style={{ minHeight: "100vh", backgroundColor: "#f8f9fa", padding: "1rem" }}>
         <h2 className="h4 fw-semibold text-secondary mb-3">Your Cart is Empty 🛒</h2>
@@ -26,13 +26,13 @@ const Cart = () => {
 
           {/* Cart Items */}
           <div className="d-flex flex-column gap-4">
-            {cartItems.map((item) => (
+            {Array.isArray(cartItems) && cartItems.map((item) => (
               <div key={item._id} className="d-flex flex-column flex-md-row align-items-center justify-content-between border-bottom pb-3">
                 
                 {/* Product Info */}
                 <div className="d-flex align-items-center gap-3">
                   <img
-                    src={item.image || "/placeholder.jpg"}
+                    src={item.images?.[0] || "https://via.placeholder.com/80x80/f8f9fa/6c757d?text=No+Image"}
                     alt={item.name}
                     className="img-fluid rounded shadow"
                     style={{ width: "96px", height: "96px", objectFit: "cover" }}
@@ -45,7 +45,7 @@ const Cart = () => {
 
                 {/* Quantity + Actions */}
                 <div className="d-flex align-items-center gap-2 mt-3 mt-md-0">
-                  <div className="input-group">
+                  <div className="input-group" style={{ maxWidth: "140px" }}>
                     <button
                       className="btn btn-outline-secondary"
                       onClick={() =>
@@ -54,10 +54,20 @@ const Cart = () => {
                     >
                       −
                     </button>
-                    <span className="input-group-text">{item.quantity}</span>
+                    <input 
+                      type="number"
+                      className="form-control text-center"
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 1;
+                        updateQuantity(item._id, Math.max(1, Math.min(999, value)));
+                      }}
+                      min="1"
+                      max="999"
+                    />
                     <button
                       className="btn btn-outline-secondary"
-                      onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item._id, Math.min(999, item.quantity + 1))}
                     >
                       +
                     </button>
@@ -65,8 +75,9 @@ const Cart = () => {
                   <button
                     onClick={() => removeFromCart(item._id)}
                     className="btn btn-link text-danger p-0 ms-2"
+                    title="Remove item"
                   >
-                    Remove
+                    <i className="fas fa-trash"></i>
                   </button>
                 </div>
               </div>
@@ -75,7 +86,7 @@ const Cart = () => {
 
           {/* Total & Checkout */}
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 mt-md-5">
-            <h3 className="h4 fw-semibold mb-3 mb-md-0">Total: ₹{getTotal()}</h3>
+            <h3 className="h4 fw-semibold mb-3 mb-md-0">Total: ₹{totalAmount}</h3>
             <button
               onClick={() => navigate("/checkout")}
               className="btn btn-primary"
